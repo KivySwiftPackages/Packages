@@ -17,26 +17,29 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '15.0'
-      - name: Build Release    
-        run: | 
-              git clone https://github.com/apple/swift-package-collection-generator
-              cd ReposDumper
-              swift build -c release --disable-sandbox --arch arm64 --arch x86_64
-              cd ..
-              cp -rf ReposDumper/.build/apple/Products/Release/ReposDumper DumperCLI
+      - name: Build ReposDumper    
+        run: |
+          cd ReposDumper
+          swift build -c release --disable-sandbox --arch arm64 --arch x86_64
+          cd ..
+          cp -rf ReposDumper/.build/apple/Products/Release/ReposDumper DumperCLI
+
+      - name: Run ReposDump
+        run: ./DumperCLI
       
-              cd swift-package-collection-generator
-              ../DumperCLI
-
-              swift run package-collection-generate \
-                input.json kivy_packages.json \
-                --auth-token github:github.com:${{ secrets.SPM_TOKEN }}
-              #mv unsigned-collection.json ../kivy_packages.json
-
+      - name: package-collection-generate
+        run: |
+          git clone https://github.com/apple/swift-package-collection-generator
+          cd swift-package-collection-generator
+          swift run package-collection-generate ../input.json ../kivy_packages.json --auth-token github:github.com:${{ secrets.SPM_TOKEN }}
+          #mv unsigned-collection.json ../kivy_packages.json
+      - name: list dir
+        run: ls
+      
       - uses: actions/upload-artifact@v3
         with:
           name: collection-output
-          path: ./package-collection-generate/kivy_packages.json
+          path: ./kivy_packages.json
   
   uploadJSON:
     runs-on: ubuntu-latest
