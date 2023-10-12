@@ -6,9 +6,9 @@ on:
 jobs:
   mainjob1:
     runs-on: macos-13
-    strategy:
-      matrix:
-        swift: ["5.9"]
+    # strategy:
+    #   matrix:
+    #     swift: ["5.9"]
     permissions:
       contents: write
       
