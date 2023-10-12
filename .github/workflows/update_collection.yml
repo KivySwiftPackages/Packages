@@ -23,10 +23,10 @@ jobs:
               cd ReposDumper
               swift build -c release --disable-sandbox --arch arm64 --arch x86_64
               cd ..
-              cp -rf ReposDumper/.build/apple/Products/Release/ReposDumper ReposDumper
+              cp -rf ReposDumper/.build/apple/Products/Release/ReposDumper DumperCLI
       
               cd swift-package-collection-generator
-              ../ReposDumper
+              ../DumperCLI
 
               swift run package-collection-generate \
                 input.json unsigned-collection.json \
