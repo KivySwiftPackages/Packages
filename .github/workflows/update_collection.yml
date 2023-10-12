@@ -1,26 +1,60 @@
-name: Hello World
+name: Update Collection.json
 
 on:
   workflow_dispatch:
 
 jobs:
-  get-org-repos:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: austenstone/get-org-repos@main
-        with:
-          org: KivySwiftPackages
-          github-token: ${{ secrets.TOKEN }}
-        id: get-org-repos
-    outputs:
-      repos: ${{ steps.get-org-repos.outputs.repos }}
-
-  print:
-    runs-on: ubuntu-latest
-    needs: [get-org-repos]
+  mainjob1:
+    runs-on: macos-13
     strategy:
       matrix:
-        repo: ${{ fromJson(needs.get-org-repos.outputs.repos) }}
-      fail-fast: false
+        swift: ["5.9"]
+    permissions:
+      contents: write
+      
     steps:
-      - run: echo "Hello ${{ matrix.repo }}!"
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.0'
+      - name: Build Release    
+        run: | 
+              git clone https://github.com/apple/swift-package-collection-generator
+              cd ReposDumper
+              swift build -c release --disable-sandbox --arch arm64 --arch x86_64
+              cd ..
+              cp -rf ReposDumper/.build/apple/Products/Release/ReposDumper ReposDumper
+      
+              cd swift-package-collection-generator
+              ../ReposDumper
+
+              swift run package-collection-generate \
+                input.json unsigned-collection.json \
+                --auth-token github:github.com:${{ secrets.SPM_TOKEN }}
+              mv unsigned-collection.json ../kivy_packages.json
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: collection-output
+          path: ./kivy_packages.json
+  
+  uploadJSON:
+    runs-on: ubuntu-latest
+    needs: [mainjob1]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v3
+        with:
+          name: collection-output
+
+      - name: Pushes to another repository
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.SPM_TOKEN }}
+        with:
+          source-directory: './'
+          destination-github-username: 'kivyswiftpackages'
+          destination-repository-name: 'packages'
+          user-email: pythonswiftlink@gmail.com
+          target-branch: master
