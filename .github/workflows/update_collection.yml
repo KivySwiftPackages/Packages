@@ -9,6 +9,7 @@ jobs:
     steps:
       - uses: austenstone/get-org-repos@main
         with:
+          org: KivySwiftPackages
           github-token: ${{ secrets.TOKEN }}
         id: get-org-repos
     outputs:
