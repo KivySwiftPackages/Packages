@@ -17,15 +17,15 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '15.0'
-      - name: Build ReposDumper    
-        run: |
-          cd ReposDumper
-          swift build -c release --disable-sandbox --arch arm64 --arch x86_64
-          cd ..
-          cp -rf ReposDumper/.build/apple/Products/Release/ReposDumper DumperCLI
+      # - name: Build ReposDumper    
+      #   run: |
+      #     cd ReposDumper
+      #     swift build -c release --disable-sandbox --arch arm64 --arch x86_64
+      #     cd ..
+      #     cp -rf ReposDumper/.build/apple/Products/Release/ReposDumper DumperCLI
 
       - name: Run ReposDump
-        run: ./DumperCLI
+        run: swift run -c release --package-path ReposDumper
       
       - name: package-collection-generate
         run: |
