@@ -36,7 +36,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: collection-output
-          path: ./kivy_packages.json
+          path: ./package-collection-generate/kivy_packages.json
   
   uploadJSON:
     runs-on: ubuntu-latest
