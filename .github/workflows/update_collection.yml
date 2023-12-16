@@ -2,6 +2,8 @@ name: Update Collection.json
 
 on:
   workflow_dispatch:
+  schedule: ## Schedule the job to run at 12.am daily.
+  - cron: '0 12 * * *'
 
 jobs:
   mainjob1:
