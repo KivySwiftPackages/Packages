@@ -31,7 +31,7 @@ jobs:
       
       - name: package-collection-generate
         run: |
-          git clone https://github.com/apple/swift-package-collection-generator
+          git clone --branch 5.9 https://github.com/apple/swift-package-collection-generator
           cd swift-package-collection-generator
           swift run package-collection-generate ../input.json ../kivy_packages.json --auth-token github:github.com:${{ secrets.SPM_TOKEN }}
           #mv unsigned-collection.json ../kivy_packages.json
