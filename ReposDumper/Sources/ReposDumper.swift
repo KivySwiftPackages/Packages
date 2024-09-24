@@ -65,7 +65,8 @@ struct ReposDumper: AsyncParsableCommand {
         let url = URL(string: "https://api.github.com/users/kivyswiftpackages/repos")!
 
         let (data, _) = try await URLSession.shared.data(from: url)
-        let repos = try JSONDecoder().decode([GitHubRepo].self, from: data)
+		print(String(data: data, encoding: .utf8)!)
+        let repos = try! JSONDecoder().decode([GitHubRepo].self, from: data)
         repos.filter({$0.name != "Packages"}).forEach { print($0) }
         
         let inputJson = try JSONEncoder().encode(CollectionJSON(
